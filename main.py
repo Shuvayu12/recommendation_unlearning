@@ -35,8 +35,10 @@ def create_adj_matrix(train_data, num_users, num_items):
     user_items = csr_matrix((np.ones_like(train_data['UserIdx']), 
                            (train_data['UserIdx'], train_data['ItemIdx'])),
                            shape=(num_users, num_items))
-    adj_mat = csr_matrix(np.block([[np.zeros((num_users, num_users)), user_items],
-                                  [user_items.T, np.zeros((num_items, num_items))]]))
+    n_nodes = num_users + num_items
+    adj_mat = csr_matrix((n_nodes, n_nodes))
+    adj_mat[:num_users, num_users:] = user_items
+    adj_mat[num_users:, :num_users] = user_items.T
     return adj_mat
 
 def train_lightgcn():
